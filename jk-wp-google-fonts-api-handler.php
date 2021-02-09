@@ -3,6 +3,13 @@
 class jk_wp_google_fonts_api_handler
 {
 
+    public function init()
+    {
+
+        add_action('wp_enqueue_scripts', [$this, 'load_google_fonts']);
+
+    }
+
     public static function get_fonts_list()
     {
 
@@ -77,6 +84,53 @@ class jk_wp_google_fonts_api_handler
             return $fonts_list;
 
         endif;
+
+    }
+
+    public function load_google_fonts()
+    {
+
+        $fontsSubset = get_option('jk-theme-typography-settings-font-subsets');
+
+        $heading_font = get_option('jk-theme-typography-settings-heading-font');
+
+        $content_font = get_option('jk-theme-typography-settings-content-font');
+
+        $meta_font = get_option('jk-theme-typography-settings-content-meta-font');
+
+        $fontsArr = array($heading_font, $content_font, $meta_font);
+
+        if (empty($fontsSubset)):
+
+            $fontsSubset = array('latin');
+
+        endif;
+
+        $fontsSubset = implode(',', $fontsSubset);
+
+        $fonts_url = '';
+
+        $fonts = array();
+
+        foreach ($fontsArr as $font):
+
+            $fonts[] = '' . $font . ':100,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i';
+
+        endforeach;
+
+        $fonts = array_unique($fonts);
+
+        if ($fonts) :
+
+            $fonts_url = add_query_arg(array(
+                'family' => urlencode(implode('|', $fonts)),
+                'subset' => urlencode($fontsSubset),
+            ),
+                'https://fonts.googleapis.com/css');
+
+        endif;
+
+        wp_enqueue_style('jk-fonts', $fonts_url, array());
 
     }
 
