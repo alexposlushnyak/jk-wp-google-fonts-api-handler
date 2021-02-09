@@ -28,4 +28,41 @@ class jk_wp_google_fonts_api_handler
 
     }
 
+    public static function caching_fonts_list()
+    {
+
+        $current_date = new DateTime(date('Y-m-d-G'));
+
+        $expire_date = get_option('jk_cache_google_fonts_expire_date');
+
+        $google_api = JK_Settings_Getter::get_field_value('jk-google-settings', 'api-toggle');
+
+        $google_api_key = JK_Settings_Getter::get_field_value('jk-google-settings', 'google-api-key');
+
+        $force = false;
+
+        if (!empty($google_api_key) && $google_api):
+
+            if ($current_date >= $expire_date || empty($expire_date) || $force):
+
+                $fonts_list = self::get_fonts_list()['items'];
+
+                $expire_date = new DateTime(date('Y-m-d-G'));
+
+                $expire_date->modify('+7 days');
+
+                update_option('jk_cache_google_fonts_expire_date', $expire_date, false);
+
+                if (!empty($fonts_list)):
+
+                    update_option('jk_cache_google_fonts', $fonts_list, false);
+
+                endif;
+
+            endif;
+
+        endif;
+
+    }
+
 }
