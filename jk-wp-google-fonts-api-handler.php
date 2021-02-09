@@ -65,4 +65,19 @@ class jk_wp_google_fonts_api_handler
 
     }
 
+    public static function get_caching_fonts_list()
+    {
+
+        self::caching_fonts_list();
+
+        $fonts_list = get_option('jk_cache_google_fonts');
+
+        if (!empty($fonts_list)):
+
+            return $fonts_list;
+
+        endif;
+
+    }
+
 }
